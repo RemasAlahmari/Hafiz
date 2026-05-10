@@ -348,6 +348,41 @@
     letter-spacing: 0.03em;
   }
 
+  /* ===== FEATURED ITEMS ===== */
+  .gallery-item.featured {
+    border: 1px solid rgba(201,168,76,0.55);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.2), 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .gallery-item.featured img {
+    filter: brightness(1) saturate(1.05);
+  }
+
+  .gallery-item.featured::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg,
+      rgba(201,168,76,0.08) 0%,
+      transparent 50%,
+      rgba(201,168,76,0.04) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .gallery-item.featured .gallery-overlay {
+    background: linear-gradient(to top, rgba(30,15,5,0.85) 0%, transparent 45%);
+  }
+
+  .gallery-item.featured:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(201,168,76,0.6),
+                0 0 30px rgba(201,168,76,0.15);
+  }
+
   /* Stagger animation */
   .gallery-item:nth-child(1)  { animation-delay: 0.0s; }
   .gallery-item:nth-child(2)  { animation-delay: 0.1s; }
@@ -669,16 +704,18 @@
     'رجال كرام', 'صداقة العمر', 'لحظة غالية', 'معاً نحلو',
     'أجمل الذكريات', 'رفقة وأُنس', 'أهل الكرم', 'من قلب الذكريات'
   ];
+  const featured = new Set([4, 8, 10, 11, 12]); // image numbers (1-based)
   const images = Array.from({ length: 20 }, (_, i) => ({
     src: `${i + 1}.jpeg`,
-    caption: captions[i]
-  }));
+    caption: captions[i],
+    featured: featured.has(i + 1)
+  })).sort((a, b) => b.featured - a.featured);
 
   // Build gallery
   const gallery = document.getElementById('gallery');
   images.forEach((img, i) => {
     const item = document.createElement('div');
-    item.className = 'gallery-item';
+    item.className = 'gallery-item' + (img.featured ? ' featured' : '');
     item.innerHTML = `
       <img src="${img.src}" alt="${img.caption}" loading="lazy" onerror="this.parentElement.style.display='none'">
       <div class="gallery-overlay">
